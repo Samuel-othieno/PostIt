@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int              @id @default(autoincrement())
+  email            String           @unique
+  phone            BigInt           @unique
+  username         String           @unique
+  password         String
+  deletedAt        DateTime?
+  Profile          Profile?
+  groupsCreated    Group[]          @relation("createdGroups")
+  GroupMembers     GroupMembers[]
+  Messages         GroupMessages[]
+  sentMessages     Directmessages[] @relation("sentMessages")
+  receivedMessages Directmessages[] @relation("receivedMessages")
+
+  @@index([username])
+  @@index([email])
+  @@map("users")
+}
+
+model Profile {
+  id            Int      @id @default(autoincrement())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int      @unique
+  firstname     String
+  lastname      String
+  nationality   String
+  gender        Gender
+  date_Of_Birth DateTime
+  Joined        DateTime @default(now())
+}
+
+model Group {
+  id           Int             @id @default(autoincrement())
+  name         String
+  createdBy    Int
+  datecreated  DateTime        @default(now())
+  creator      User            @relation("createdGroups", fields: [createdBy], references: [id], onDelete: Cascade)
+  GroupMembers GroupMembers[]
+  Messages     GroupMessages[]
+}
+
+model GroupMembers {
+  id        Int      @id @default(autoincrement())
+  GroupID   Group    @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  members   User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  DateAdded DateTime @default(now())
+  groupId   Int
+  userId    Int
+  role      Role     @default(Member)
+}
+
+model GroupMessages {
+  id      Int    @id @default(autoincrement())
+  content String
+  GroupID Group  @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  SentBy  User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  groupId Int
+  userId  Int
+}
+
+model Directmessages {
+  id         Int      @id @default(autoincrement())
+  content    String
+  senderId   Int
+  receiverId Int
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("sentMessages", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  receiver User @relation("receivedMessages", fields: [receiverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("direct_messages")
+}
+
+enum Role {
+  Admin
+  Member
+}
+
+enum Gender {
+  Male
+  Female
+  NoneBinary
+}
