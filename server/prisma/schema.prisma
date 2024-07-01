@@ -16,7 +16,7 @@ datasource db {
 model User {
   id               Int              @id @default(autoincrement())
   email            String           @unique
-  phone            BigInt           @unique
+  phone            String           @unique
   username         String           @unique
   password         String
   deletedAt        DateTime?
@@ -40,7 +40,6 @@ model Profile {
   lastname      String
   nationality   String
   gender        Gender
-  date_Of_Birth DateTime
   Joined        DateTime @default(now())
 }
 
