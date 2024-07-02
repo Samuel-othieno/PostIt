@@ -5,9 +5,15 @@ const prisma = new PrismaClient();
 
 
 async function createNewGroup (req, res){
-    const {groupName, userIds} = req.body;
+    const {groupName, userId} = req.body; 
 
     try {
+        const user = await prisma.user.findFirst({
+            where:{id: userId}
+        }) 
+
+        console.log("UDFFD:", user)
+
         if(!groupName){
             return res
             .status(StatusCodes.BAD_REQUEST)
@@ -27,22 +33,21 @@ async function createNewGroup (req, res){
               .json({ message: 'Group already in Exists' });
           }
 
-          if( !req.user || !req.user.id){
-            return res
-            .status(StatusCodes.INTERNAL_SERVER_ERROR)
-            .json({error:"An error occurred while creating the group.", details: error.message})
+          if(!user){
+            throw new Error("An error occurred while creating the group.")
           }
 
         const newGroup = await prisma.group.create({
             data:{
                 name: groupName,
-                createdBy: req.user.id,
+                createdBy: user.id,
                 GroupMembers:{
-                    create: userIds.map(userId=>({
+                    create:{
+                        id:userId,
                         members:{
-                            connect:{id: userId}
+                            connect:{id: user.id}
                         }
-                    }))
+                    }
                 },
                 include:{
                     GroupMembers: true
@@ -53,6 +58,7 @@ async function createNewGroup (req, res){
         .status(StatusCodes.OK)
         .json({message:"Group created successful!", newGroup})
     } catch (error) {
+        console.log(error)
         return res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({error:"An error occurred while creating the group.", details: error.message})

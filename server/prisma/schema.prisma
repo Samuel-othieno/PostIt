@@ -45,7 +45,7 @@ model Profile {
 
 model Group {
   id           Int             @id @default(autoincrement())
-  name         String
+  name         String 
   createdBy    Int
   datecreated  DateTime        @default(now())
   creator      User            @relation("createdGroups", fields: [createdBy], references: [id], onDelete: Cascade)
