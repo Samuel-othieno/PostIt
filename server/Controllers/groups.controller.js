@@ -13,11 +13,7 @@ async function createNewGroup (req, res){
             .status(StatusCodes.BAD_REQUEST)
             .json({error: "Group name required!"})
         }
-        if(!userIds || !Array.isArray(userIds)){
-            return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({error: "A valid array of User IDs is required!"})
-        }
+        
 
         const existingGroup = await prisma.group.findFirst({
             where: {
@@ -29,6 +25,12 @@ async function createNewGroup (req, res){
             return res
               .status(StatusCodes.CONFLICT)
               .json({ message: 'Group already in Exists' });
+          }
+
+          if( !req.user || !req.user.id){
+            return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({error:"An error occurred while creating the group.", details: error.message})
           }
 
         const newGroup = await prisma.group.create({
