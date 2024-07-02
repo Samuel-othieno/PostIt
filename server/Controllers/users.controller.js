@@ -2,17 +2,21 @@ import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import bcrypt from 'bcrypt'
+import bcrypt from "bcrypt";
 import { schema } from "../Utility Functions/dataValidation.utility.js";
 
 const prisma = new PrismaClient();
 
 // User Login====================================================================================================================================================
 async function userLogin(req, res) {
-  const { username, email, password } = req.body;
+  const { username, email, password, phone } = req.body;
 
-  if ((!username && !email) || !password) {
-    const errorMessage = !username && !email ? "Username or Email" : "Password";
+  if ((!username && !email && !phone) || !password) {
+    const errorMessage =
+      !username && !email && !phone
+        ? "Username, phonenumber or Email"
+        : "Password";
+
     return res
       .status(StatusCodes.BAD_REQUEST)
       .json({ message: `${errorMessage} is missing` });
@@ -20,12 +24,12 @@ async function userLogin(req, res) {
   try {
     const user = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { username }],
+        OR: [{ email }, { username }, { phone }],
       },
     });
 
     if (!user) {
-      res
+      return res
         .status(StatusCodes.UNAUTHORIZED)
         .json({ error: "Invalid credentials, Please try again" });
     }
@@ -40,28 +44,27 @@ async function userLogin(req, res) {
       let token = jwt.sign(userData, process.env.JWT_SECRET1, {
         expiresIn: "32h",
       });
-      res.status(StatusCodes.OK).json({ message: "Success!", token });
+      return res.status(StatusCodes.OK).json({ message: "Success!", token });
     } else {
-      res.status(StatusCodes.UNAUTHORIZED).json({
+      return res.status(StatusCodes.UNAUTHORIZED).json({
         error: "Password or email is Incorrect",
       });
     }
   } catch (error) {
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Operation failure! Please try again", details: error.message });
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: "Operation failure! Please try again",
+      details: error.message,
+    });
   }
 }
-
 
 // Create A new User ==============================================================================================================================================
 
 async function createAUser(req, res) {
-  
-  const { error, value } = schema.validate(req.body)
+  const { error, value } = schema.validate(req.body);
 
   if (error) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.details })
+    return res.status(StatusCodes.BAD_REQUEST).json({ message: error.details });
   }
 
   const saltRounds = 10;
@@ -74,7 +77,6 @@ async function createAUser(req, res) {
     lastname,
     nationality,
     gender,
-    address
   } = value;
 
   try {
@@ -85,14 +87,18 @@ async function createAUser(req, res) {
     });
 
     if (existingUser) {
-      const conflictField = existingUser.email === email ? "Email" : 
-      existingUser.phone ===phone?"Phone number":"Username";
+      const conflictField =
+        existingUser.email === email
+          ? "Email"
+          : existingUser.phone === phone
+          ? "Phone number"
+          : "Username";
       return res
         .status(StatusCodes.CONFLICT)
         .json({ message: `${conflictField} already in use` });
     }
 
-    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const newUser = await prisma.user.create({
       data: {
         email,
@@ -102,7 +108,7 @@ async function createAUser(req, res) {
         Profile: {
           create: {
             firstname,
-            lastname,          
+            lastname,
             nationality,
             gender,
           },
@@ -117,53 +123,6 @@ async function createAUser(req, res) {
       .status(StatusCodes.CREATED)
       .json({ message: "SUCCESS! New User added", newUser });
   } catch (error) {
-    return res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({
-        error: "Operation failure! Please try again",
-        details: error.message,
-      });
-  }
-}
-
-
-//                                                                 *FIND OPERATIONS*                                                                              //
-
-// FIND ONLY ONE User USING EMAIL AS A UNIQUE ATTRIBUTE. ========================================================================================================
-async function findUniqueUser(req, res) {
-  const { username, email } = req.body;
-
-  // Check if both username and email are missing and send a BAD_REQUEST response if so
-  if (!username && !email) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      message:
-        !username && !email
-          ? "Username or Email required"
-          : !username
-            ? "Username is required"
-            : "Email is required",
-    });
-  }
-
-  try {
-    const uniqueUserExists = await prisma.user.findFirst({
-      where: {
-        AND: [{ username }, { email }],
-      },
-      include: {
-        Profile: true,
-        Medical_records: true,
-        Prescriptions: true,
-      }
-    });
-
-    return !uniqueUserExists
-      ? res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" })
-      : res
-        .status(StatusCodes.OK)
-        .json({ message: "SUCCESS! User found", uniqueUserExists });
-  } catch (error) {
-    console.error(error); // Log the error for debugging purposes
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       error: "Operation failure! Please try again",
       details: error.message,
@@ -171,21 +130,65 @@ async function findUniqueUser(req, res) {
   }
 }
 
-// Find all User at a Time.😊==============================================================================================================================
+//                                                 *FIND OPERATIONS*                                              //
+
+// FIND ONLY ONE User USING EMAIL AS A UNIQUE ATTRIBUTE. ==========================================================
+async function findUniqueUser(req, res) {
+  const { username, email, phone } = req.body;
+
+  if (!username && !email && !phone) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      message:
+        !username && !email && !phone
+          ? "To find a user, use fill in their email address, Phone number or username"
+          : !username
+          ? "Username is required"
+          : !phone
+          ? "Phone number is required"
+          : "Email is required",
+    });
+  }
+
+  try {
+    const uniqueUserExists = await prisma.user.findFirst({
+      where: {
+        AND: [{ username }, { email }, { phone }],
+      },
+      include: {
+        Profile: true,
+      },
+    });
+
+    return !uniqueUserExists
+      ? res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" })
+      : res
+          .status(StatusCodes.OK)
+          .json({ message: "SUCCESS! User found", uniqueUserExists });
+  } catch (error) {
+    console.error(error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: "Operation failure! Please try again",
+      details: error.message,
+    });
+  }
+}
+
+// Find all User at a Time.😊========================================================================================
 async function findAllUsers(req, res) {
   try {
     const allUsers = await prisma.user.findMany({
       include: {
         Profile: true,
-      }
+      },
     });
     res
       .status(StatusCodes.ACCEPTED)
       .json({ message: "SUCCESS! Users found", allUsers });
   } catch (error) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Operation failure! Please try again", details: error.message });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      error: "Operation failure! Please try again",
+      details: error.message,
+    });
   }
 }
 
@@ -194,9 +197,11 @@ async function findAllUsers(req, res) {
 
 async function updateUserData(req, res) {
   const {
+    newPhone,
     newEmail,
     newUsername,
     newPassword,
+    oldPhone,
     oldEmail,
     oldUsername,
     oldPassword,
@@ -204,11 +209,13 @@ async function updateUserData(req, res) {
 
   // Check for missing fields
   if (
-    !newEmail ||
-    !newUsername ||
-    !newPassword ||
-    !oldEmail ||
-    !oldUsername ||
+    !newEmail &&
+    !newPhone &&
+    !newUsername &&
+    !newPassword &&
+    !oldPhone &&
+    !oldEmail &&
+    !oldUsername &&
     !oldPassword
   ) {
     return res.status(StatusCodes.BAD_REQUEST).json({
@@ -219,35 +226,46 @@ async function updateUserData(req, res) {
   try {
     // Check for Old User data in the Database (user table)
     const oldUserData = await prisma.user.findUnique({
-      where: { email: oldEmail, username: oldUsername },
+      where: { phone: oldPhone, email: oldEmail, username: oldUsername },
     });
 
-    if (!oldUserData || oldUserData.password !== oldPassword) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        error: "Incorrect old User data, please try again.",
-      });
+    if (
+      !oldUserData ||
+      !oldUserData.username !== oldUsername ||
+      !oldUserData.email !== oldEmail ||
+      !oldUserData.phone !== oldPhone
+    ) {
+      !oldUserData.username
+        ? "Invalid username"
+        : !oldUserData.email
+        ? "Invalid Email"
+        : "Invalid phonenumber";
     }
 
     // Check for New User Data Conflicts
     const UserConflict = await prisma.user.findFirst({
       where: {
-        OR: [{ email: newEmail }, { username: newUsername }],
+        OR: [
+          { email: newEmail },
+          { username: newUsername },
+          { phone: newPhone },
+        ],
         NOT: { id: oldUserData.id },
       },
     });
 
-    if (UserConflict) {
+    if (UserConflict !== null && UserConflict) {
       const conflictError =
-        UserConflict.email === newEmail ? "Email" : "Username";
+        UserConflict.email === newEmail
+          ? "Email"
+          : UserConflict.email
+          ? "Username"
+          : UserConflict.password
+          ? "Password"
+          : "Phone nmuber";
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ error: `${conflictError} already in use!` });
-    }
-
-    if (newPassword === oldPassword) {
-      return res.status(StatusCodes.BAD_REQUEST).json({
-        error: "Please, use a password you have not used before!",
-      });
     }
 
     // Update User Data
@@ -272,18 +290,18 @@ async function updateUserData(req, res) {
 
 // Delete a Single User at a time=====================================================================================================================================
 async function deleteAUser(req, res) {
-  const { email, username } = req.body;
+  const { email, username, phone } = req.body;
 
-  if (!email && !username) {
+  if (!email && !username && !phone) {
     return res.status(StatusCodes.BAD_REQUEST).json({
-      error: "Email or Username required, try again!",
+      error: "Please enter your email, phone number or username to continue.",
     });
   }
 
   try {
     const UserExists = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { username }],
+        OR: [{ email }, { username }, { phone }],
       },
     });
 
@@ -302,7 +320,7 @@ async function deleteAUser(req, res) {
         .json({ message: "SUCCESS! User deleted" });
     }
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       error: "Operation failure! Please try again",
       details: error.message,
     });
