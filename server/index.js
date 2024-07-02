@@ -6,6 +6,7 @@ import 'dotenv/config';
 import helmet from "helmet";
 import cors from 'cors';
 import userRouter from './Routes/users.route.js';
+import groupRouter from './Routes/groups.route.js';
 
 const App = express();
 const PORT = process.env.PORT1 || process.env.PORT2;
@@ -24,6 +25,7 @@ App.get('/', (req,res)=>{
 })
 
 App.use(userRouter)
+App.use(groupRouter)
 
 App.listen(PORT, (req, res)=>{
     console.log(`${HP} ${HOST}:${PORT}`)
