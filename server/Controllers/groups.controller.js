@@ -4,14 +4,25 @@ import { StatusCodes } from "http-status-codes";
 const prisma = new PrismaClient();
 
 async function createNewGroup(req, res) {
-  const { groupName, datecreated, userId } = req.body;
+  const { groupName, datecreated, userId, members} = req.body;
 
   try {
+    
+    if(!Array.isArray(members)){
+      return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({
+        error: "Invalid members format. 'Members' must be an array."
+      })
+    }
+
     const user = await prisma.user.findFirst({
       where: { id: userId },
     });
-
-    console.log("UDFFD:", user);
+  
+    if (!user) {
+      throw new Error("User not found");
+    }
 
     if (!groupName) {
       return res
@@ -21,7 +32,7 @@ async function createNewGroup(req, res) {
 
     const existingGroup = await prisma.group.findFirst({
       where: {
-        OR: [{ name: groupName }],
+        name: groupName 
       },
     });
 
@@ -31,9 +42,15 @@ async function createNewGroup(req, res) {
         .json({ message: "Group already in Exists" });
     }
 
-    if (!user) {
-      throw new Error("An error occurred while creating the group.");
-    }
+    const groupMembersData = members.map(memberId => ({
+      userId: memberId,
+      role: 'Member'
+    }))
+
+    groupMembersData.push({
+      userId: user.id,
+      role: 'Admin'
+    })
 
     const newGroup = await prisma.group.create({
       data: {
@@ -41,24 +58,21 @@ async function createNewGroup(req, res) {
         createdBy: user.id,
         datecreated,
         GroupMembers: {
-          create: {
-            id: userId,
-            members: {
-              connect: { id: user.id },
-            },
-          },
+          create: groupMembersData,
         },
-        include: {
-          GroupMembers: true,
-        },
+      },
+      include: {
+        GroupMembers: true,
       },
     });
     return res
-      .status(StatusCodes.OK)
+      .status(StatusCodes.CREATED)
       .json({ message: "Group created successful!", newGroup });
   } catch (error) {
     console.log(error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    return res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json({
       error: "An error occurred while creating the group.",
       details: error.message,
     });
