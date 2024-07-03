@@ -7,7 +7,7 @@ async function createNewGroup(req, res) {
   const { groupName, datecreated, userId, members} = req.body;
 
   try {
-    
+
     if(!Array.isArray(members)){
       return res
       .status(StatusCodes.BAD_REQUEST)
@@ -79,4 +79,63 @@ async function createNewGroup(req, res) {
   }
 }
 
-export default createNewGroup;
+
+async function addMembersToGroup(req, res) {
+  const { groupId, newMembers } = req.body;
+
+  try {
+    console.log('newMembers:', newMembers);
+
+    if (!Array.isArray(newMembers)) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        error: "Invalid input: 'newMembers' must be an array.",
+      });
+    }
+ 
+    const group = await prisma.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!group) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        error: "Group not found.",
+      });
+    }
+
+    const newGroupMembersData = newMembers.map(userId => ({
+      userId,
+      role: 'Member',
+    }));
+
+   
+    const updatedGroup = await prisma.group.update({
+      where: { id: groupId },
+      data: {
+        GroupMembers: {
+          create: newGroupMembersData,
+        },
+      },
+      include: {
+        GroupMembers: true,
+      },
+    });
+
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: "New members added successfully!", updatedGroup });
+  } catch (error) {
+    console.error(error);
+    return res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json({
+      error: "An error occurred while adding new members to the group.",
+      details: error.message,
+    });
+  }
+}
+
+
+export{
+  createNewGroup,
+  addMembersToGroup
+};
