@@ -26,6 +26,6 @@ App.get("/", (req, res) => {
 App.use(userRouter);
 App.use(groupRouter);
 
-App.listen(PORT, (req, res) => {
+App.listen(PORT, () => {
   console.log(`${HP} ${HOST}:${PORT}`);
 });
