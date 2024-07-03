@@ -91,8 +91,8 @@ async function createAUser(req, res) {
         existingUser.email === email
           ? "Email"
           : existingUser.phone === phone
-          ? "Phone number"
-          : "Username";
+            ? "Phone number"
+            : "Username";
       return res
         .status(StatusCodes.CONFLICT)
         .json({ message: `${conflictField} already in use` });
@@ -142,10 +142,10 @@ async function findUniqueUser(req, res) {
         !username && !email && !phone
           ? "To find a user, use fill in their email address, Phone number or username"
           : !username
-          ? "Username is required"
-          : !phone
-          ? "Phone number is required"
-          : "Email is required",
+            ? "Username is required"
+            : !phone
+              ? "Phone number is required"
+              : "Email is required",
     });
   }
 
@@ -238,8 +238,8 @@ async function updateUserData(req, res) {
       !oldUserData.username
         ? "Invalid username"
         : !oldUserData.email
-        ? "Invalid Email"
-        : "Invalid phonenumber";
+          ? "Invalid Email"
+          : "Invalid phonenumber";
     }
 
     // Check for New User Data Conflicts
@@ -259,10 +259,10 @@ async function updateUserData(req, res) {
         UserConflict.email === newEmail
           ? "Email"
           : UserConflict.email
-          ? "Username"
-          : UserConflict.password
-          ? "Password"
-          : "Phone nmuber";
+            ? "Username"
+            : UserConflict.password
+              ? "Password"
+              : "Phone nmuber";
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ error: `${conflictError} already in use!` });
