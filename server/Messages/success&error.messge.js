@@ -7,11 +7,8 @@ const access_denied = "You do not have permissions to perform this action, try a
 const unavailable = "Service temporarily down 😭, please try again"
 const invalid_User = "Invalid user, please check your credentials and try again"
 const Invalid_Password = "Wrong password, please check you password and try again."
+const Login_Success = "You have successfully logged into you account"
 
-
-async function messages(req, res){
-
-   }
 
 export {
     Invalid_User,
@@ -20,11 +17,9 @@ export {
     access_denied,
     invalid_User,
     unavailable,
-    Invalid_Password
+    Invalid_Password,
+    Login_Success
 }
-
-
-
 
 
 //check if credentials of user exist?
