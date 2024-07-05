@@ -56,6 +56,7 @@ async function createNewGroup(req, res) {
 
 async function addMembersToGroup(req, res) {
   const { groupId, newMembers } = req.body;
+  console.log(req.body)
 
   try {
     const newGroupMembersData = newMembers.map(userId => ({
@@ -85,6 +86,7 @@ async function addMembersToGroup(req, res) {
         .json({ message: error.message })
     }
     else {
+      console.log(error)
       return res
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .json({ message: "Service is temporarily down" })

@@ -11,16 +11,6 @@ const prisma = new PrismaClient();
 async function userLogin(req, res) {
   const { username, email, password, phone } = req.body;
 
-  if ((!username && !email && !phone) || !password) {
-    const errorMessage =
-      !username && !email && !phone
-        ? "Username, phonenumber or Email"
-        : "Password";
-
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: `${errorMessage} is missing` });
-  }
   try {
     const user = await prisma.user.findFirst({
       where: {

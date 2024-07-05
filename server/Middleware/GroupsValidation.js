@@ -37,8 +37,9 @@ async function checkIfGroupExists(req, res, next) {
         });
 
         if (existingGroup) {
-            return next(new ExistingConflict(`${groupName} already exists.`))
+            return next(new ExistingConflict(`${existingGroup.name} already exists.`))
         }
+        
 
         next()
 
@@ -66,17 +67,19 @@ async function checkNonExistingGroup(req, res, next) {
 }
 
 async function checkExistingGroupMember(req, res, next){
-    const {userId, groupId} = req.body;
+    const {newMembers, username,userId, groupId, groupName} = req.body;
 
     try {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
             where:{
-                id:userId
+                OR:[{username: newMembers}, {id:userId}]
             }
         })
 
-        const group = await prisma.group.findUnique({
-            where: { id: groupId },
+        const group = await prisma.group.findFirst({
+            where: {
+                OR:[{ id: groupId }, {name:groupName}]
+            },
         });
 
         const groupMember = await prisma.groupMembers.findMany({
@@ -89,7 +92,7 @@ async function checkExistingGroupMember(req, res, next){
         })
 
         if(groupMember){
-            return next(new ExistingConflict(`${user.username} is already a member of ${group.name}`))
+            return next(new ExistingConflict(`${user.username} is already a member of ${groupName}`))
         }
 
         next()

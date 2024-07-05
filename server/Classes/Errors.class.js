@@ -24,8 +24,26 @@ class ExistingConflict extends Error {
     }
 }
 
+class UnauthorizedUser extends Error{
+    constructor(message){
+        super(message)
+        this.name= "UnauthorizedUser"
+        this.status= "StatusCodes.UNAUTHORIZED"        
+    }
+}
+
+class InternalServerError extends Error{
+    constructor(message){
+        super(message)
+        this.name = "InternalServerError"
+        this.status = StatusCodes.INTERNAL_SERVER_ERROR
+    }
+}
+
 export{
     NotFound,
     BadRequest,
-    ExistingConflict
+    ExistingConflict,
+    UnauthorizedUser,
+    InternalServerError
 }
