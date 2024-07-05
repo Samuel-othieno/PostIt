@@ -3,6 +3,7 @@ import { createNewGroup, addMembersToGroup } from "../Controllers/groups.control
 import { checkExistingGroupMember, checkIfGroupExists, checkNonExistingGroup, validateGroupCreation } from "../Middleware/GroupsValidation.js";
 import checkExistingUser from "../Middleware/UserValidation.js";
 import { BadRequest,ExistingConflict,InternalServerError,NotFound } from "../Classes/Errors.class.js";
+import { unavailable } from "../Messages/success&error.messge.js";
 
 const groupRouter = Router();
 
@@ -15,7 +16,7 @@ groupRouter.use((error, req, res, next)=>{
         .status(error.status)
         .json({message: error.message})
     }else{
-        return new InternalServerError()
+        return new InternalServerError(unavailable)
     }
 })
 

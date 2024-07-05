@@ -21,6 +21,7 @@ import {
   NotFound,
   UnauthorizedUser,
 } from "../Classes/Errors.class.js";
+import { unavailable } from "../Messages/success&error.messge.js";
 
 // Route Handlers----------------------------------------!
 const userRouter = Router();
@@ -42,7 +43,7 @@ userRouter.use((error, req, res, next) => {
   ) {
     return res.status(error.status).json(error.message);
   } else {
-    return new InternalServerError("Service Temporarily down!");
+    return new InternalServerError(unavailable);
   }
 });
 export default userRouter;
