@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 import bcrypt from "bcrypt";
 import { schema } from "../Utility Functions/dataValidation.utility.js";
+import { Login_Success } from "../Messages/success&error.messge.js";
 
 const prisma = new PrismaClient();
 
@@ -11,16 +12,6 @@ const prisma = new PrismaClient();
 async function userLogin(req, res) {
   const { username, email, password, phone } = req.body;
 
-  if ((!username && !email && !phone) || !password) {
-    const errorMessage =
-      !username && !email && !phone
-        ? "Username, phonenumber or Email"
-        : "Password";
-
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: `${errorMessage} is missing` });
-  }
   try {
     const user = await prisma.user.findFirst({
       where: {
@@ -44,7 +35,7 @@ async function userLogin(req, res) {
       let token = jwt.sign(userData, process.env.JWT_SECRET1, {
         expiresIn: "32h",
       });
-      return res.status(StatusCodes.OK).json({ message: "Success!", token });
+      return res.status(StatusCodes.OK).json({ message: Login_Success, token });
     } else {
       return res.status(StatusCodes.UNAUTHORIZED).json({
         error: "Password or email is Incorrect",
