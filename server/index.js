@@ -7,6 +7,7 @@ import helmet from "helmet";
 import cors from "cors";
 import userRouter from "./Routes/users.route.js";
 import groupRouter from "./Routes/groups.route.js";
+import messageRouter from "./Routes/messages.route.js";
 
 const App = express();
 const PORT = process.env.PORT1 || process.env.PORT2;
@@ -25,6 +26,7 @@ App.get("/", (req, res) => {
 
 App.use(userRouter);
 App.use(groupRouter);
+App.use(messageRouter)
 
 App.listen(PORT, () => {
   console.log(`${HP} ${HOST}:${PORT}`);

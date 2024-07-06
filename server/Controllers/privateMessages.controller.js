@@ -53,7 +53,7 @@ async function retrievePrivateMessage(req, res){
             .status(error.status)
             .json({message: error.message})
         } else {
-            InternalServerError(unavailable)
+            return new InternalServerError(unavailable)
         }
     }
 }
