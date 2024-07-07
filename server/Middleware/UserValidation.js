@@ -1,11 +1,6 @@
-import {
-  BadRequest,
-  NotFound,
-} from "../Classes/Errors.class.js";
+import { BadRequest, NotFound } from "../Classes/Errors.class.js";
 
 import { PrismaClient } from "@prisma/client";
-
-
 
 const prisma = new PrismaClient();
 
@@ -41,8 +36,4 @@ function validateUserLoginInput(req, res, next) {
   next();
 }
 
-
-export{
-    validateUserLoginInput,
-    checkForAnExistingUser
-}
+export { validateUserLoginInput, checkForAnExistingUser };

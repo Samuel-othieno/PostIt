@@ -12,4 +12,4 @@ const bodyValidator = [
   body("content").isString().notEmpty(),
 ];
 
-export {validationResult, bodyValidator};
+export { validationResult, bodyValidator };
