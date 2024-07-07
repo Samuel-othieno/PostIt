@@ -11,11 +11,19 @@ import {
   retrievePrivateMessage,
   sendPrivateMessage,
 } from "../Controllers/privateMessages.controller.js";
-import { bodyValidator, validationResult } from "../Middleware/messageValidator.js";
+import {
+  bodyValidator,
+  validationResult,
+} from "../Middleware/messageValidator.js";
 
 const messageRouter = Router();
 
-messageRouter.post("/send",bodyValidator, validationResult, sendPrivateMessage,);
+messageRouter.post(
+  "/send",
+  bodyValidator,
+  validationResult,
+  sendPrivateMessage,
+);
 messageRouter.get("/receive", retrievePrivateMessage);
 
 // Error handler--------------------------

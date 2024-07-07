@@ -33,19 +33,19 @@ model User {
 }
 
 model Profile {
-  id            Int      @id @default(autoincrement())
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        Int      @unique
-  firstname     String
-  lastname      String
-  nationality   String
-  gender        Gender
-  Joined        DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int      @unique
+  firstname   String
+  lastname    String
+  nationality String
+  gender      Gender
+  Joined      DateTime @default(now())
 }
 
 model Group {
   id           Int             @id @default(autoincrement())
-  name         String 
+  name         String
   createdBy    Int
   datecreated  DateTime        @default(now())
   creator      User            @relation("createdGroups", fields: [createdBy], references: [id], onDelete: Cascade)

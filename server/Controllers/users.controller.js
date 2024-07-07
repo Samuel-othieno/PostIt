@@ -183,8 +183,8 @@ async function findAllUsers(req, res) {
   }
 }
 
-//                                                                 *UPDATE OPERATIONS*                                                                              //
-// Update User Data ===============================================================================================================================================
+//                                                      *UPDATE OPERATIONS*                                                                              //
+// Update User Data ===========================================================================================================
 
 async function updateUserData(req, res) {
   const {
