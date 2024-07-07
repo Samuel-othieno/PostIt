@@ -12,9 +12,9 @@ async function sendPrivateMessage(req, res){
             data:{
                 senderId,
                 receiverId,
-                content
-            }
-        })
+                content,
+            },
+        });
         return res
         .status(StatusCodes.CREATED)
         .json({message})
