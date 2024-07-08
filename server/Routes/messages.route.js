@@ -13,18 +13,19 @@ import {
 } from "../Controllers/privateMessages.controller.js";
 import {
   bodyValidator,
-  validationResult,
 } from "../Middleware/messageValidator.js";
 
+
+
+// Route handlers.........................
 const messageRouter = Router();
 
 messageRouter.post(
-  "/send",
+  "/private-message",
   bodyValidator,
-  validationResult,
   sendPrivateMessage,
 );
-messageRouter.get("/receive", retrievePrivateMessage);
+messageRouter.get("/private-messages/:userId", retrievePrivateMessage);
 
 // Error handler--------------------------
 messageRouter.use((error, req, res, next) => {
