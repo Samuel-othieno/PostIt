@@ -21,6 +21,7 @@ async function sendPrivateMessage(req, res) {
       },
     });
     return res.status(StatusCodes.CREATED).json({ message });
+    
   } catch (error) {
     if (error instanceof NotFound || error instanceof BadRequest) {
       return res.status(error.status).json({ message: error.message });

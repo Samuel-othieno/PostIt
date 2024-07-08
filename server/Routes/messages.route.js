@@ -25,7 +25,7 @@ messageRouter.post(
   bodyValidator,
   sendPrivateMessage,
 );
-messageRouter.get("/private-message/:", retrievePrivateMessage);
+messageRouter.get("/private-messages/:userId", retrievePrivateMessage);
 
 // Error handler--------------------------
 messageRouter.use((error, req, res, next) => {
