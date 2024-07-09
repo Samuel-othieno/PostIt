@@ -13,7 +13,7 @@ import {
   validate,
   schema,
 } from "../Utility Functions/dataValidation.utility.js";
-import { validateUserLoginInput } from "../Middleware/UserValidation.js";
+import { checkForAnExistingUser, validateUserLoginInput } from "../Middleware/UserValidation.js";
 import {
   BadRequest,
   ExistingConflict,
@@ -26,7 +26,7 @@ import { unavailable } from "../Messages/success&error.messge.js";
 // Route Handlers----------------------------------------!
 const userRouter = Router();
 userRouter.post("/create", validate(schema), createAUser);
-userRouter.post("/login", [validateUserLoginInput], userLogin);
+userRouter.post("/login", [validateUserLoginInput, checkForAnExistingUser], userLogin);
 userRouter.post("/find", tokenCheck, findUniqueUser);
 userRouter.get("/all", tokenCheck, findAllUsers);
 userRouter.put("/update", tokenCheck, updateUserData);
