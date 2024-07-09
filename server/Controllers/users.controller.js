@@ -4,7 +4,16 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 import bcrypt from "bcrypt";
 import { schema } from "../Utility Functions/dataValidation.utility.js";
-import { Login_Success } from "../Messages/success&error.messge.js";
+import {
+  Login_Success,
+  unavailable,
+} from "../Messages/success&error.messge.js";
+import {
+  BadRequest,
+  ExistingConflict,
+  InternalServerError,
+  NotFound,
+} from "../Classes/Errors.class.js";
 
 const prisma = new PrismaClient();
 
@@ -203,9 +212,7 @@ async function updateUserData(req, res) {
     !oldUsername &&
     !oldPassword
   ) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      error: "Fill in all the required fields to proceed.",
-    });
+    return BadRequest("Fill in all the required fields to proceed.")
   }
 
   try {
@@ -248,9 +255,7 @@ async function updateUserData(req, res) {
             : UserConflict.password
               ? "Password"
               : "Phone nmuber";
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ error: `${conflictError} already in use!` });
+      return new BadRequest(`${conflictError} already in use!`);
     }
 
     // Update User Data
@@ -264,10 +269,15 @@ async function updateUserData(req, res) {
       updatedUserData,
     });
   } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation Failure!",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(unavailable);
+    }
   }
 }
 
@@ -278,9 +288,9 @@ async function deleteAUser(req, res) {
   const { email, username, phone } = req.body;
 
   if (!email && !username && !phone) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      error: "Please enter your email, phone number or username to continue.",
-    });
+    return new BadRequest(
+      "Please enter your email, phone number or username to continue.",
+    );
   }
 
   try {
