@@ -19,12 +19,6 @@ async function userLogin(req, res) {
       },
     });
 
-    if (!user) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json({ error: "Invalid credentials, Please try again" });
-    }
-
     if (bcrypt.compareSync(password, user.password)) {
       let userData = {
         id: user.id,
