@@ -13,6 +13,7 @@ import {
   ExistingConflict,
   InternalServerError,
   NotFound,
+  UnauthorizedUser,
 } from "../Classes/Errors.class.js";
 
 const prisma = new PrismaClient();
@@ -45,10 +46,16 @@ async function userLogin(req, res) {
       });
     }
   } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(unavailable);
+    }
   }
 }
 
@@ -117,10 +124,16 @@ async function createAUser(req, res) {
       .status(StatusCodes.CREATED)
       .json({ message: "SUCCESS! New User added", newUser });
   } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(unavailable);
+    }
   }
 }
 
@@ -159,11 +172,16 @@ async function findUniqueUser(req, res) {
           .status(StatusCodes.OK)
           .json({ message: "SUCCESS! User found", uniqueUserExists });
   } catch (error) {
-    console.error(error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(unavailable);
+    }
   }
 }
 
@@ -179,10 +197,16 @@ async function findAllUsers(req, res) {
       .status(StatusCodes.ACCEPTED)
       .json({ message: "SUCCESS! Users found", allUsers });
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(unavailable);
+    }
   }
 }
 
@@ -212,7 +236,7 @@ async function updateUserData(req, res) {
     !oldUsername &&
     !oldPassword
   ) {
-    return BadRequest("Fill in all the required fields to proceed.")
+    return BadRequest("Fill in all the required fields to proceed.");
   }
 
   try {
@@ -272,7 +296,8 @@ async function updateUserData(req, res) {
     if (
       error instanceof BadRequest ||
       error instanceof ExistingConflict ||
-      error instanceof NotFound
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
@@ -315,10 +340,16 @@ async function deleteAUser(req, res) {
         .json({ message: "SUCCESS! User deleted" });
     }
   } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(unavailable);
+    }
   }
 }
 
@@ -326,15 +357,20 @@ async function deleteAUser(req, res) {
 async function deleteAllUsers(req, res) {
   try {
     const deletedUsers = await prisma.user.deleteMany();
-
     res
       .status(StatusCodes.OK)
       .json({ message: "SUCCESS! All Users deleted.", deletedUsers });
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(unavailable);
+    }
   }
 }
 
