@@ -1,16 +1,25 @@
-// Global Message variables
+// GLOBAL MESSAGE VARIABLES!
 
+//  For individual Users    *******************************************************
+
+// New Users! 
 const user_created = "Your account has been successfully created";
 const after_success = "you may now explore some of our top feature.";
+
+
+//Old Users! #
 const Invalid_User = "User not found, please try again!";
-const access_denied =
-  "You do not have permissions to perform this action, try again later";
-const unavailable = "Service temporarily down 😭, please try again";
-const invalid_User =
-  "Invalid user, please check your credentials and try again";
-const Invalid_Password =
-  "Wrong password, please check you password and try again.";
+const invalid_User = "Invalid user, please check your credentials and try again";
+
+
+// Access Rights
+const Invalid_Password = "Wrong password, please check you password and try again.";
 const Login_Success = "You have successfully logged into you account";
+const access_denied = "You do not have permissions to perform this action, try again later";
+
+
+//Groups    *******************************************************
+const group_created = "Group created successful!"
 
 export {
   Invalid_User,

@@ -4,7 +4,9 @@ import {
   NotFound,
   BadRequest,
   ExistingConflict,
+  InternalServerError,
 } from "../Classes/Errors.class.js";
+import { unavailable } from "../Messages/success&error.messge.js";
 
 const prisma = new PrismaClient();
 
@@ -41,19 +43,18 @@ async function createNewGroup(req, res) {
 
     return res
       .status(StatusCodes.CREATED)
-      .json({ message: "Group created successful!", newGroup });
+      .json({ message: group_created, newGroup });
   } catch (error) {
+    console.error(error);
     if (
       error instanceof BadRequest ||
       error instanceof ExistingConflict ||
-      error instanceof NotFound
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      console.log(error);
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Service is temporarily down" });
+      return new InternalServerError(unavailable);
     }
   }
 }
@@ -84,17 +85,16 @@ async function addMembersToGroup(req, res) {
       .status(StatusCodes.OK)
       .json({ message: "New members added successfully!", updatedGroup });
   } catch (error) {
+    console.error(error);
     if (
       error instanceof BadRequest ||
       error instanceof ExistingConflict ||
-      error instanceof NotFound
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      console.log(error);
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ message: "Service is temporarily down" });
+      return new InternalServerError(unavailable)
     }
   }
 }
