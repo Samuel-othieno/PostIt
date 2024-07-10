@@ -5,10 +5,6 @@ import "dotenv/config";
 import bcrypt from "bcrypt";
 import { schema } from "../Utility Functions/dataValidation.utility.js";
 import {
-  Login_Success,
-  unavailable,
-} from "../Messages/success&error.messge.js";
-import {
   BadRequest,
   ExistingConflict,
   InternalServerError,
