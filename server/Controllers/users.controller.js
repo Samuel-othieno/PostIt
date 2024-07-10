@@ -5,15 +5,13 @@ import "dotenv/config";
 import bcrypt from "bcrypt";
 import { schema } from "../Utility Functions/dataValidation.utility.js";
 import {
-  Login_Success,
-  unavailable,
-} from "../Messages/success&error.messge.js";
-import {
   BadRequest,
   ExistingConflict,
   InternalServerError,
   NotFound,
+  UnauthorizedUser,
 } from "../Classes/Errors.class.js";
+import {appMessages} from "../Messages/"
 
 const prisma = new PrismaClient();
 
@@ -38,17 +36,21 @@ async function userLogin(req, res) {
       let token = jwt.sign(userData, process.env.JWT_SECRET1, {
         expiresIn: "32h",
       });
-      return res.status(StatusCodes.OK).json({ message: Login_Success, token });
+      return res.status(StatusCodes.OK).json({token});
     } else {
-      return res.status(StatusCodes.UNAUTHORIZED).json({
-        error: "Password or email is Incorrect",
-      });
+      return new BadRequest(appMessages.user.invalidCredentials)
     }
   } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(appMessages.system.internalServerError);
+    }
   }
 }
 
@@ -89,7 +91,7 @@ async function createAUser(req, res) {
             : "Username";
       return res
         .status(StatusCodes.CONFLICT)
-        .json({ message: `${conflictField} already in use` });
+        .json({ message: `${conflictField} already in use`, details: appMessages.user.accountExists });
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -115,12 +117,18 @@ async function createAUser(req, res) {
 
     return res
       .status(StatusCodes.CREATED)
-      .json({ message: "SUCCESS! New User added", newUser });
+      .json({ message: appMessages.user.created, newUser });
   } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(appMessages.system.internalServerError);
+    }
   }
 }
 
@@ -131,7 +139,9 @@ async function findUniqueUser(req, res) {
   const { username, email, phone } = req.body;
 
   if (!username && !email && !phone) {
-    return res.status(StatusCodes.BAD_REQUEST).json({
+    return res.status(StatusCodes.BAD_REQUEST)
+    
+    .json({
       message:
         !username && !email && !phone
           ? "To find a user, use fill in their email address, Phone number or username"
@@ -154,16 +164,21 @@ async function findUniqueUser(req, res) {
     });
 
     return !uniqueUserExists
-      ? res.status(StatusCodes.NOT_FOUND).json({ message: "User not found" })
+      ? res.status(StatusCodes.NOT_FOUND).json({ message:appMessages.user.notFound })
       : res
           .status(StatusCodes.OK)
-          .json({ message: "SUCCESS! User found", uniqueUserExists });
+          .json({  uniqueUserExists });
   } catch (error) {
-    console.error(error);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(appMessages.system.internalServerError);
+    }
   }
 }
 
@@ -177,12 +192,18 @@ async function findAllUsers(req, res) {
     });
     res
       .status(StatusCodes.ACCEPTED)
-      .json({ message: "SUCCESS! Users found", allUsers });
+      .json({allUsers });
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(appMessages.system.internalServerError);
+    }
   }
 }
 
@@ -212,7 +233,7 @@ async function updateUserData(req, res) {
     !oldUsername &&
     !oldPassword
   ) {
-    return BadRequest("Fill in all the required fields to proceed.")
+    return BadRequest(appMessages.system.badRequest);
   }
 
   try {
@@ -272,7 +293,8 @@ async function updateUserData(req, res) {
     if (
       error instanceof BadRequest ||
       error instanceof ExistingConflict ||
-      error instanceof NotFound
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
@@ -315,10 +337,16 @@ async function deleteAUser(req, res) {
         .json({ message: "SUCCESS! User deleted" });
     }
   } catch (error) {
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(appMessages.system.internalServerError);
+    }
   }
 }
 
@@ -326,15 +354,20 @@ async function deleteAUser(req, res) {
 async function deleteAllUsers(req, res) {
   try {
     const deletedUsers = await prisma.user.deleteMany();
-
     res
       .status(StatusCodes.OK)
-      .json({ message: "SUCCESS! All Users deleted.", deletedUsers });
+      .json({ message: "SUCCESS! All Users deleted."});
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-      error: "Operation failure! Please try again",
-      details: error.message,
-    });
+    if (
+      error instanceof BadRequest ||
+      error instanceof ExistingConflict ||
+      error instanceof NotFound ||
+      error instanceof UnauthorizedUser
+    ) {
+      return res.status(error.status).json({ message: error.message });
+    } else {
+      return new InternalServerError(appMessages.system.internalServerError);
+    }
   }
 }
 
