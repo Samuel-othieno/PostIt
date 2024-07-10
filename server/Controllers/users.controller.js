@@ -132,8 +132,9 @@ async function createAUser(req, res) {
   }
 }
 
-//                                                 *FIND OPERATIONS*                                              //
 
+
+//                                                 *FIND OPERATIONS*                                              //
 // FIND ONLY ONE User USING EMAIL AS A UNIQUE ATTRIBUTE. ==========================================================
 async function findUniqueUser(req, res) {
   const { username, email, phone } = req.body;
@@ -167,7 +168,7 @@ async function findUniqueUser(req, res) {
       ? res.status(StatusCodes.NOT_FOUND).json({ message:appMessages.user.notFound })
       : res
           .status(StatusCodes.OK)
-          .json({  uniqueUserExists });
+          .json({uniqueUserExists});
   } catch (error) {
     if (
       error instanceof BadRequest ||
@@ -192,7 +193,7 @@ async function findAllUsers(req, res) {
     });
     res
       .status(StatusCodes.ACCEPTED)
-      .json({allUsers });
+      .json({allUsers});
   } catch (error) {
     if (
       error instanceof BadRequest ||
@@ -298,21 +299,22 @@ async function updateUserData(req, res) {
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(unavailable);
+      return new InternalServerError(appMessages.system.internalServerError);
     }
   }
 }
 
-//                                                                 *DELETE OPERATIONS*                                                                              //
 
+
+
+
+//                                                                 *DELETE OPERATIONS* 
 // Delete a Single User at a time=====================================================================================================================================
 async function deleteAUser(req, res) {
   const { email, username, phone } = req.body;
 
   if (!email && !username && !phone) {
-    return new BadRequest(
-      "Please enter your email, phone number or username to continue.",
-    );
+    throw new BadRequest(appMessages.user.invalidCredentials)
   }
 
   try {
@@ -323,9 +325,7 @@ async function deleteAUser(req, res) {
     });
 
     if (!UserExists) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ error: "User not found" });
+      throw new NotFound(appMessages.user.notFound)
     } else {
       await prisma.user.delete({
         where: {
