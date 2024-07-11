@@ -11,7 +11,7 @@ import {
   NotFound,
   UnauthorizedUser,
 } from "../Classes/Errors.class.js";
-import {appMessages} from "../Messages/"
+import { messages } from "../Messages/messages.js";
 
 const prisma = new PrismaClient();
 
@@ -38,7 +38,7 @@ async function userLogin(req, res) {
       });
       return res.status(StatusCodes.OK).json({token});
     } else {
-      return new BadRequest(appMessages.user.invalidCredentials)
+      return new BadRequest(messages.user.invalidCredentials)
     }
   } catch (error) {
     if (
@@ -49,7 +49,7 @@ async function userLogin(req, res) {
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(appMessages.system.internalServerError);
+      return new InternalServerError(messages.system.internalServerError);
     }
   }
 }
@@ -91,7 +91,7 @@ async function createAUser(req, res) {
             : "Username";
       return res
         .status(StatusCodes.CONFLICT)
-        .json({ message: `${conflictField} already in use`, details: appMessages.user.accountExists });
+        .json({ message: `${conflictField} already in use`, details: messages.user.accountExists });
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -117,7 +117,7 @@ async function createAUser(req, res) {
 
     return res
       .status(StatusCodes.CREATED)
-      .json({ message: appMessages.user.created, newUser });
+      .json({ message: messages.user.created, newUser });
   } catch (error) {
     if (
       error instanceof BadRequest ||
@@ -127,7 +127,7 @@ async function createAUser(req, res) {
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(appMessages.system.internalServerError);
+      return new InternalServerError(messages.system.internalServerError);
     }
   }
 }
@@ -165,7 +165,7 @@ async function findUniqueUser(req, res) {
     });
 
     return !uniqueUserExists
-      ? res.status(StatusCodes.NOT_FOUND).json({ message:appMessages.user.notFound })
+      ? res.status(StatusCodes.NOT_FOUND).json({ message: messages.user.notFound })
       : res
           .status(StatusCodes.OK)
           .json({uniqueUserExists});
@@ -178,7 +178,7 @@ async function findUniqueUser(req, res) {
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(appMessages.system.internalServerError);
+      return new InternalServerError(messages.system.internalServerError);
     }
   }
 }
@@ -203,7 +203,7 @@ async function findAllUsers(req, res) {
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(appMessages.system.internalServerError);
+      return new InternalServerError(messages.system.internalServerError);
     }
   }
 }
@@ -234,7 +234,7 @@ async function updateUserData(req, res) {
     !oldUsername &&
     !oldPassword
   ) {
-    return BadRequest(appMessages.system.badRequest);
+    return BadRequest(messages.system.badRequest);
   }
 
   try {
@@ -299,7 +299,7 @@ async function updateUserData(req, res) {
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(appMessages.system.internalServerError);
+      return new InternalServerError(messages.system.internalServerError);
     }
   }
 }
@@ -314,7 +314,7 @@ async function deleteAUser(req, res) {
   const { email, username, phone } = req.body;
 
   if (!email && !username && !phone) {
-    throw new BadRequest(appMessages.user.invalidCredentials)
+    throw new BadRequest(messages.user.invalidCredentials)
   }
 
   try {
@@ -325,7 +325,7 @@ async function deleteAUser(req, res) {
     });
 
     if (!UserExists) {
-      throw new NotFound(appMessages.user.notFound)
+      throw new NotFound(messages.user.notFound)
     } else {
       await prisma.user.delete({
         where: {
@@ -345,7 +345,7 @@ async function deleteAUser(req, res) {
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(appMessages.system.internalServerError);
+      return new InternalServerError(messages.system.internalServerError);
     }
   }
 }
@@ -366,7 +366,7 @@ async function deleteAllUsers(req, res) {
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(appMessages.system.internalServerError);
+      return new InternalServerError(messages.system.internalServerError);
     }
   }
 }

@@ -6,7 +6,8 @@ import {
   ExistingConflict,
   InternalServerError,
 } from "../Classes/Errors.class.js";
-import { unavailable } from "../Messages/success&error.messge.js";
+import { messages } from "../Messages/messages.js";
+
 
 const prisma = new PrismaClient();
 
@@ -43,7 +44,7 @@ async function createNewGroup(req, res) {
 
     return res
       .status(StatusCodes.CREATED)
-      .json({ message: group_created, newGroup });
+      .json({ message: messages.group.created, newGroup });
   } catch (error) {
     console.error(error);
     if (
@@ -54,7 +55,7 @@ async function createNewGroup(req, res) {
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(unavailable);
+      return new InternalServerError(messages.system.serviceUnavailable);
     }
   }
 }
@@ -94,7 +95,7 @@ async function addMembersToGroup(req, res) {
     ) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(unavailable)
+      return new InternalServerError(messages.system.serviceUnavailable)
     }
   }
 }

@@ -6,7 +6,7 @@ import {
   ExistingConflict,
   InternalServerError,
 } from "../Classes/Errors.class.js";
-import { unavailable } from "../Messages/success&error.messge.js";
+import { messages } from "../Messages/messages.js";
 
 const prisma = new PrismaClient();
 
@@ -26,7 +26,7 @@ async function sendPrivateMessage(req, res) {
     if (error instanceof NotFound || error instanceof BadRequest) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      InternalServerError(unavailable);
+      InternalServerError(messages.system.serviceUnavailable);
     }
   }
 }
@@ -47,7 +47,7 @@ async function retrievePrivateMessage(req, res) {
     if (error instanceof NotFound || error instanceof BadRequest) {
       return res.status(error.status).json({ message: error.message });
     } else {
-      return new InternalServerError(unavailable);
+      return new InternalServerError(messages.system.serviceUnavailable);
     }
   }
 }
