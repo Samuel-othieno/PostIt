@@ -1,4 +1,4 @@
-export const appMessages = {
+export const messages = {
   user: {
     created: "Your account has been successfully created. Welcome aboard!",
     accountExists:

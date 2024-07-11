@@ -6,7 +6,6 @@ import {
   InternalServerError,
   NotFound,
 } from "../Classes/Errors.class.js";
-import { unavailable } from "../Messages/success&error.messge.js";
 import {
   retrievePrivateMessage,
   sendPrivateMessage,
@@ -14,6 +13,7 @@ import {
 import {
   bodyValidator,
 } from "../Middleware/messageValidator.js";
+import { messages } from "../Messages/messages.js";
 
 
 
@@ -36,7 +36,7 @@ messageRouter.use((error, req, res, next) => {
   ) {
     return res.status(error.status).json({ message: error.message });
   } else {
-    return new InternalServerError(unavailable);
+    return new InternalServerError(messages.system.serviceUnavailable);
   }
 });
 
