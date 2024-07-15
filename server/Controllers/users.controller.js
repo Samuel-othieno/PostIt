@@ -83,7 +83,7 @@ async function createAUser(req, res) {
   try {
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { username }],
+        OR: [{ email }, { username }, {phone}],
       },
     });
 
@@ -97,6 +97,19 @@ async function createAUser(req, res) {
       return res
         .status(StatusCodes.CONFLICT)
         .json({ message: `${conflictField} already in use`, details: messages.user.accountExists });
+    }
+    
+    const existingProfile = await prisma.profile.findFirst({
+      where: {
+        AND: [{ firstname }, { lastname },],
+      },
+    });
+
+    if (existingProfile) {
+
+      return res
+        .status(StatusCodes.CONFLICT)
+        .json({ message: `${firstname} ${lastname} already exists `, details: messages.user.accountExists });
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -124,6 +137,7 @@ async function createAUser(req, res) {
       .status(StatusCodes.CREATED)
       .json({ message: messages.user.created, newUser });
   } catch (error) {
+    console.error(error);
     if (
       error instanceof BadRequest ||
       error instanceof ExistingConflict ||
