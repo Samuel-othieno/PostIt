@@ -7,6 +7,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+
+// For All Group Creations =============================================
 function validateGroupCreation(req, res, next) {
   const { groupName, members } = req.body;
 
@@ -34,8 +36,28 @@ function validateNewGroupMember(req, res, next) {
   next();
 }
 
+// Fpr new group members****************************
+async function checkForAnExistingUser(req, res, next) {
+  const {newMembers, groupId} = req.body;
+
+  try {
+    const newMembers = await prisma.user.findUnique({
+      where: { id: newMembers},
+    });
+
+    if (!newMembers) {
+      return next(new NotFound(`${newMembers} not found`));
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+// For Group Creation*******************************
 async function checkIfGroupExists(req, res, next) {
-  const { groupName, groupId } = req.body;
+  const { groupName, groupId, newMembers} = req.body;
   try {
     const existingGroup = await prisma.group.findFirst({
       where: {

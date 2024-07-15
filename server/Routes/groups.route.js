@@ -9,7 +9,6 @@ import {
   checkNonExistingGroup,
   validateGroupCreation,
 } from "../Middleware/GroupsValidation.js";
-import { checkForAnExistingUser } from "../Middleware/UserValidation.js";
 import {
   BadRequest,
   ExistingConflict,
@@ -23,10 +22,10 @@ const groupRouter = Router();
 
 groupRouter.post(
   "/create_group",
-  [checkForAnExistingUser, validateGroupCreation, checkIfGroupExists],
+  [ validateGroupCreation, checkIfGroupExists],
   createNewGroup,
 );
-groupRouter.put("/add-member", [checkForAnExistingUser], addMembersToGroup);
+groupRouter.put("/add-member", addMembersToGroup);
 
 // Error handler--------------------------
 groupRouter.use((error, req, res, next) => {

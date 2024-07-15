@@ -19,12 +19,17 @@ const prisma = new PrismaClient();
 async function userLogin(req, res) {
   const { username, email, password, phone } = req.body;
 
+
   try {
     const user = await prisma.user.findFirst({
       where: {
         OR: [{ email }, { username }, { phone }],
       },
     });
+
+    if(!user){
+      throw new NotFound(messages.user.notFound)
+    }
 
     if (bcrypt.compareSync(password, user.password)) {
       let userData = {

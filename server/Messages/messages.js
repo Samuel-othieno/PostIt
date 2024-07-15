@@ -2,7 +2,7 @@ export const messages = {
   user: {
     created: "Your account has been successfully created. Welcome aboard!",
     accountExists:
-      "An account with this email already exists. Please log in or use a different email.",
+      "An account with this email already exists! Please log in or use a different email.",
     loginSuccess:
       "You have successfully logged into your account. Welcome back!",
     invalidCredentials:

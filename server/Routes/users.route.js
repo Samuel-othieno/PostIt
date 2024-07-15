@@ -13,7 +13,7 @@ import {
   validate,
   schema,
 } from "../Utility Functions/dataValidation.utility.js";
-import { checkForAnExistingUser, validateUserLoginInput } from "../Middleware/UserValidation.js";
+import {validateUserLoginInput } from "../Middleware/UserValidation.js";
 import {
   BadRequest,
   ExistingConflict,
@@ -26,7 +26,7 @@ import { messages } from "../Messages/messages.js";
 // Route Handlers----------------------------------------!
 const userRouter = Router();
 userRouter.post("/create", validate(schema), createAUser);
-userRouter.post("/login", [validateUserLoginInput, checkForAnExistingUser], userLogin);
+userRouter.post("/login",validateUserLoginInput, userLogin);
 userRouter.post("/find", tokenCheck, findUniqueUser);
 userRouter.get("/all", tokenCheck, findAllUsers);
 userRouter.put("/update", tokenCheck, updateUserData);
@@ -43,7 +43,7 @@ userRouter.use((error, req, res, next) => {
   ) {
     return res.status(error.status).json(error.message);
   } else {
-    return new InternalServerError(unavailable);
+    return new InternalServerError(messages.system.ser);
   }
 });
 export default userRouter;
