@@ -61,6 +61,8 @@ model GroupMembers {
   groupId   Int
   userId    Int
   role      Role     @default(Member)
+
+  @@unique([groupId, userId])
 }
 
 model GroupMessages {
