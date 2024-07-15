@@ -19,7 +19,6 @@ const prisma = new PrismaClient();
 async function userLogin(req, res) {
   const { username, email, password, phone } = req.body;
 
-
   try {
     const user = await prisma.user.findFirst({
       where: {
@@ -27,25 +26,30 @@ async function userLogin(req, res) {
       },
     });
 
-    if(!user){
-      throw new NotFound(messages.user.notFound)
+    if (!user) {
+      throw new NotFound(messages.user.notFound);
     }
 
-    if (bcrypt.compareSync(password, user.password)) {
-      let userData = {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        phone: user.phone,
-      };
-      let token = jwt.sign(userData, process.env.JWT_SECRET1, {
-        expiresIn: "72h",
-      });
-      return res.status(StatusCodes.OK).json({token});
-    } else {
-      return new BadRequest(messages.user.invalidCredentials)
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+
+    if (!isPasswordValid) {
+      return new BadRequest(messages.user.invalidCredentials);
     }
+
+    const userData = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      phone: user.phone,
+    };
+
+    const token = jwt.sign(userData, process.env.JWT_SECRET1, {
+      expiresIn: "72h",
+    });
+
+    return res.status(StatusCodes.OK).json({ token });
   } catch (error) {
+    console.error(error);
     if (
       error instanceof BadRequest ||
       error instanceof ExistingConflict ||
@@ -83,7 +87,7 @@ async function createAUser(req, res) {
   try {
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { username }, {phone}],
+        OR: [{ email }, { username }, { phone }],
       },
     });
 
@@ -94,22 +98,22 @@ async function createAUser(req, res) {
           : existingUser.phone === phone
             ? "Phone number"
             : "Username";
-      return res
-        .status(StatusCodes.CONFLICT)
-        .json({ message: `${conflictField} already in use`, details: messages.user.accountExists });
+      return res.status(StatusCodes.CONFLICT).json({
+        message: `${conflictField} already in use`,
+        details: messages.user.accountExists,
+      });
     }
-    
+
     const existingProfile = await prisma.profile.findFirst({
       where: {
-        AND: [{ firstname }, { lastname },],
+        AND: [{ firstname }, { lastname }],
       },
     });
 
     if (existingProfile) {
-
       return res
         .status(StatusCodes.CONFLICT)
-        .json({ message: `${firstname} ${lastname} already exists `});
+        .json({ message: `${firstname} ${lastname} already exists ` });
     }
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -151,26 +155,25 @@ async function createAUser(req, res) {
   }
 }
 
-
-
 //                                                 *FIND OPERATIONS*                                              //
 // FIND ONLY ONE User USING EMAIL AS A UNIQUE ATTRIBUTE. ==========================================================
 async function findUniqueUser(req, res) {
   const { username, email, phone } = req.body;
 
   if (!username && !email && !phone) {
-    return res.status(StatusCodes.BAD_REQUEST)
-    
-    .json({
-      message:
-        !username && !email && !phone
-          ? "To find a user, use fill in their email address, Phone number or username"
-          : !username
-            ? "Username is required"
-            : !phone
-              ? "Phone number is required"
-              : "Email is required",
-    });
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+
+      .json({
+        message:
+          !username && !email && !phone
+            ? "To find a user, use fill in their email address, Phone number or username"
+            : !username
+              ? "Username is required"
+              : !phone
+                ? "Phone number is required"
+                : "Email is required",
+      });
   }
 
   try {
@@ -184,10 +187,10 @@ async function findUniqueUser(req, res) {
     });
 
     return !uniqueUserExists
-      ? res.status(StatusCodes.NOT_FOUND).json({ message: messages.user.notFound })
-      : res
-          .status(StatusCodes.OK)
-          .json({uniqueUserExists});
+      ? res
+          .status(StatusCodes.NOT_FOUND)
+          .json({ message: messages.user.notFound })
+      : res.status(StatusCodes.OK).json({ uniqueUserExists });
   } catch (error) {
     if (
       error instanceof BadRequest ||
@@ -210,9 +213,7 @@ async function findAllUsers(req, res) {
         Profile: true,
       },
     });
-    res
-      .status(StatusCodes.ACCEPTED)
-      .json({allUsers});
+    res.status(StatusCodes.ACCEPTED).json({ allUsers });
   } catch (error) {
     if (
       error instanceof BadRequest ||
@@ -323,17 +324,13 @@ async function updateUserData(req, res) {
   }
 }
 
-
-
-
-
-//                                                                 *DELETE OPERATIONS* 
+//                                                                 *DELETE OPERATIONS*
 // Delete a Single User at a time=====================================================================================================================================
 async function deleteAUser(req, res) {
   const { email, username, phone } = req.body;
 
   if (!email && !username && !phone) {
-    throw new BadRequest(messages.user.invalidCredentials)
+    throw new BadRequest(messages.user.invalidCredentials);
   }
 
   try {
@@ -344,7 +341,7 @@ async function deleteAUser(req, res) {
     });
 
     if (!UserExists) {
-      throw new NotFound(messages.user.notFound)
+      throw new NotFound(messages.user.notFound);
     } else {
       await prisma.user.delete({
         where: {
@@ -373,9 +370,7 @@ async function deleteAUser(req, res) {
 async function deleteAllUsers(req, res) {
   try {
     const deletedUsers = await prisma.user.deleteMany();
-    res
-      .status(StatusCodes.OK)
-      .json({ message: "SUCCESS! All Users deleted."});
+    res.status(StatusCodes.OK).json({ message: "SUCCESS! All Users deleted." });
   } catch (error) {
     if (
       error instanceof BadRequest ||
