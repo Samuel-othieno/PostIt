@@ -4,26 +4,9 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-async function checkForAnExistingUser(req, res, next) {
-  const { userId } = req.body;
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      return next(new NotFound(`${userId} not found`));
-    }
-
-    next();
-  } catch (error) {
-    next(error);
-  }
-}
 
 function validateUserLoginInput(req, res, next) {
-  const { username, email, phone } = req.body;
+  const { username, email, phone, password } = req.body;
 
   if ((!username && !email && !phone) || !password) {
     const errorMessage =
@@ -36,4 +19,4 @@ function validateUserLoginInput(req, res, next) {
   next();
 }
 
-export { validateUserLoginInput, checkForAnExistingUser };
+export { validateUserLoginInput};

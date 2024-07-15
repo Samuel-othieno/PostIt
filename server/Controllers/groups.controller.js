@@ -5,6 +5,7 @@ import {
   BadRequest,
   ExistingConflict,
   InternalServerError,
+  UnauthorizedUser,
 } from "../Classes/Errors.class.js";
 import { messages } from "../Messages/messages.js";
 
@@ -61,8 +62,9 @@ async function createNewGroup(req, res) {
 }
 
 async function addMembersToGroup(req, res) {
+  
   const { groupId, newMembers } = req.body;
-  console.log(req.body);
+  console.log("Group:",  groupId)
 
   try {
     const newGroupMembersData = newMembers.map((userId) => ({
