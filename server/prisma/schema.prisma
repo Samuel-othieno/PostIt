@@ -71,6 +71,7 @@ model GroupMessages {
   SentBy  User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   groupId Int
   userId  Int
+  createdAt  DateTime @default(now())
 }
 
 model Directmessages {

@@ -68,6 +68,7 @@ async function retrieveGroupMessages(req, res) {
     });
     return res.status(StatusCodes.OK).json({ messages });
   } catch (error) {
+    console.error(error);
     if (error instanceof NotFound || error instanceof BadRequest) {
       return res.status(error.status).json({ message: error.message });
     } else {
