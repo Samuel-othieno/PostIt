@@ -78,7 +78,7 @@ async function checkIfGroupExists(req, res, next) {
 }
 
 async function checkNonExistingGroup(req, res, next) {
-  const { groupId } = req.body;
+  const { groupId } = req.params;
 
   try {
     const group = await prisma.group.findUnique({

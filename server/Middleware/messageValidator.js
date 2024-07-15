@@ -1,9 +1,14 @@
-import { validationResult, body, } from "express-validator";
+import { validationResult, body } from "express-validator";
 
 // async function validateResult(req) {
 //   if (!errors.isEmpty()) {
 //     return res.status(400).json({ errors: errors.array() });
 //   }
+// }
+
+// const errors = validationResult(req);
+// if (!errors.isEmpty()) {
+//   return res.status(400).json({ errors: errors.array() });
 // }
 
 const bodyValidator = [
@@ -12,4 +17,9 @@ const bodyValidator = [
   body("content").isString().notEmpty(),
 ];
 
-export { bodyValidator };
+const groupBodyValidator = [
+  body("userId").isInt(),
+  body("content").isString().notEmpty(),
+];
+
+export { bodyValidator, groupBodyValidator };

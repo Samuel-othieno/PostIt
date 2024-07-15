@@ -10,22 +10,21 @@ import {
   retrievePrivateMessage,
   sendPrivateMessage,
 } from "../Controllers/privateMessages.controller.js";
-import {
-  bodyValidator,
-} from "../Middleware/messageValidator.js";
+import { bodyValidator, groupBodyValidator } from "../Middleware/messageValidator.js";
 import { messages } from "../Messages/messages.js";
-
-
+import {
+  retrieveGroupMessages,
+  sendMessageTogroup,
+} from "../Controllers/groupMessages.controller.js";
+import { checkNonExistingGroup } from "../Middleware/GroupsValidation.js";
 
 // Route handlers.........................
 const messageRouter = Router();
 
-messageRouter.post(
-  "/private-message",
-  bodyValidator,
-  sendPrivateMessage,
-);
+messageRouter.post("/private-message", bodyValidator, sendPrivateMessage);
 messageRouter.get("/private-messages/:userId", retrievePrivateMessage);
+messageRouter.post("/group/:groupId/messages",groupBodyValidator, sendMessageTogroup);
+messageRouter.get("/group-messages/:groupId/messages", retrieveGroupMessages);
 
 // Error handler--------------------------
 messageRouter.use((error, req, res, next) => {
