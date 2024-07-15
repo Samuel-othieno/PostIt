@@ -61,6 +61,7 @@ model GroupMembers {
   groupId   Int
   userId    Int
   role      Role     @default(Member)
+  @@unique([groupId, userId])
 }
 
 model GroupMessages {
@@ -70,6 +71,7 @@ model GroupMessages {
   SentBy  User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   groupId Int
   userId  Int
+  createdAt  DateTime @default(now())
 }
 
 model Directmessages {
