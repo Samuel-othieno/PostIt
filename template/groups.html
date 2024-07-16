@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Group</title>
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="mt-5">Create a New Group</h2>
+      <form>
+        <div class="form-group">
+          <label for="groupName">Group Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="groupName"
+            placeholder="Enter group name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="addUser">Add User</label>
+          <input
+            type="text"
+            class="form-control"
+            id="addUser"
+            placeholder="Enter Username"
+          />
+          <button
+            type="button"
+            class="btn btn-secondary mt-2"
+            id="addUserButton"
+          >
+            Add User
+          </button>
+        </div>
+        <div class="form-group">
+          <label for="userlist">Users in Group</label>
+          <ul></ul>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Group</button>
+      </form>
+    </div>
+    <script src="./group.js"></script>
+  </body>
+</html>
