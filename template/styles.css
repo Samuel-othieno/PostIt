@@ -1,9 +1,10 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: Helvetica, sans-serif;
+  color: #e5e8f5;
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: #e5e8f5;
 }
 
 /*# sourceMappingURL=styles.css.map */
