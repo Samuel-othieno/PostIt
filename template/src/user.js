@@ -1,4 +1,3 @@
-// src/user.js
 export function createUser(username, email, password) {
     // Function to create a user
   }
