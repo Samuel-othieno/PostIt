@@ -1,7 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
+import userSlice from "../Featurtes/userSlice";
+import groupSlice from "../Featurtes/groupSlice";
 
 const store = configureStore({
-    reducer: {},
-})
+  reducer: {
+    user: userSlice,
+    group: groupSlice,
+  },
+});
 
-export default store
+export default store;
