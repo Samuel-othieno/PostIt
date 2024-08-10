@@ -1,7 +1,7 @@
 # Template Directory
 
 ## Overview
-The `template` directory contains the initial HTML, CSS, and JavaScript files that serve as the blueprint for the user interface of the PostIt application. These files were created as part of Challenge 1 to design the initial UI using HTML/CSS/JS/Bootstrap.
+The `template` directory contains the initial HTML, CSS, and JavaScript files that serve as the blueprint for the user interface of the PostIt. These files were created as part of Challenge 1 to design the initial UI using HTML/CSS/JS/Bootstrap.
 
 ## Technologies Used
 - **HTML**: Markup language used to structure the content of the web pages.
