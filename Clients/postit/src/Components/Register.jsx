@@ -14,10 +14,12 @@ const Register = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="md-form bgr">
-        <label htmlFor="username">Username</label>
+    <div className="h-screen flex items-center justify-center bg-gray-100">
+      <form className="bg-white p-8 rounded shadow-md w-full max-w-sm" onSubmit={handleSubmit}>
+      <div className="mb-4">
+        <label className="block text-gray-600 text-sm font-bold mb-2" htmlFor="username">Username</label>
         <input
+          className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:shadow-outline"
           type="text"
           id="username"
           value={username}
@@ -46,6 +48,8 @@ const Register = () => {
         Register
       </button>
     </form>
+
+    </div>
   );
 };
 
