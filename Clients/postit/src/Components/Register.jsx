@@ -26,25 +26,29 @@ const Register = () => {
           onChange={(e) => setUsername(e.target.value)}
         />
       </div>
-      <div className="md-form">
-        <label htmlFor="email">Email</label>
+      <div className="mb-4">
+        <label className="block text-gray-600 text-sm font-bold mb-2" htmlFor="email">Email</label>
         <input
+          className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:shadow-outline"
+ 
           type="email"
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
-      <div className="md-form">
-        <label htmlFor="password">Password</label>
+      <div className="mb-6">
+        <label className="block text-gray-600 text-sm font-bold mb-2" htmlFor="password">Password</label>
         <input
+          className="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-900 leading-tight focus:outline-none focus:shadow-outline"
+ 
           type="password"
           id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
-      <button type="submit" className="btn btn-primary">
+      <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
         Register
       </button>
     </form>
