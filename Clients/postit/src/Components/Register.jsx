@@ -15,7 +15,7 @@ const Register = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="md-form">
+      <div className="md-form bgr">
         <label htmlFor="username">Username</label>
         <input
           type="text"
