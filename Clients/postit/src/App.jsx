@@ -3,6 +3,7 @@ import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
 import Register from "./Components/Register";
 import Group from "./Components/Group";
+import MessagesList from "./Components/Messages/Group message List";
 // import Register from "./Components/Register";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
         <>
           <Register />
           <Group/>
+          <MessagesList/>
         </>
       }
     </MantineProvider>
