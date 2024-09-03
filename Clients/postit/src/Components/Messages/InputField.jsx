@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, TextInput } from "@mantine/core";
+import PropTypes from 'prop-types';
 
 
 const InputField = ({onSend})=>{
@@ -19,3 +20,9 @@ const InputField = ({onSend})=>{
         </div>
     )
 }
+
+InputField.propTypes = {
+    onSend: PropTypes.node,
+}
+
+export default InputField

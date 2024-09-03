@@ -1,37 +1,32 @@
-/* eslint-disable react/prop-types */
 import { Avatar } from '@mantine/core';
-import propTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 
 
 const MessagesList = ({messages}) =>{
     return (
-        <div className="message-list">
-            {messages.map((message, index)=>(
-                <div key={index} className={`message &{message.sent ? 'Sent' : 'Received'} flex items-center mb-4`}>
-                    c
-                    <div className="message-content bg-gray-200 p-2 rounded-lg">
-                        <p>
-                            {message.text}
-                        </p>
-                        <span className='timestamp text-xs text-gray-500'>
-                            {message.timestamp}
-                        </span>
-                    </div>
-                    {message.sent && <Avatar src={message.Avatar} radius="xl" size="md" className="ml-2"/>}
-                </div>
-            ))}
+        <div className="message-list p-4">
+          {messages.map((message, index) => (
+            <div key={index} className={`message ${message.sent ? 'sent' : 'received'} flex items-center mb-4`}>
+              {!message.sent && <Avatar src={message.avatar} radius="xl" size="md" className="mr-2" />}
+              <div className="message-content bg-gray-200 p-2 rounded-lg">
+                <p>{message.text}</p>
+                <span className="timestamp text-xs text-gray-500">{message.timestamp}</span>
+              </div>
+              {message.sent && <Avatar src={message.avatar} radius="xl" size="md" className="ml-2" />}
+            </div>
+          ))}
         </div>
-    );
-};
+      );
+    };
 
 MessagesList.propTypes={
-    message: propTypes.arrayOf(
-        propTypes.shape({
-            text: propTypes.string.isRequired,
-            sent: propTypes.bool.isRequired,
-            Avatar: propTypes.string.isRequired,
-            timestamp: propTypes.string.isRequired
+    messages: PropTypes.arrayOf(
+        PropTypes.shape({
+            text: PropTypes.string.isRequired,
+            sent: PropTypes.bool.isRequired,
+            Avatar: PropTypes.string.isRequired,
+            timestamp: PropTypes.string.isRequired
         })
     ).isRequired,
 };
