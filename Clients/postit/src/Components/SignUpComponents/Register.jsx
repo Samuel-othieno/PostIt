@@ -1,17 +1,19 @@
-/* eslint-disable react/prop-types */
 import { Link, useNavigation } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import { useSubmit } from 'react-router-dom';
 import { CheckCircle } from "@mui/icons-material";
 import { Cancel } from "@mui/icons-material";
-import { Visibility } from "@mui/icons-material";
-import { VisibilityOff } from "@mui/icons-material";
-import { CircularProgress } from "@mui/material";
-import { AddBox } from "@mui/icons-material";
-import {Button, Paper, } from "@mui/material";
+// import { Visibility } from "@mui/icons-material";
+// import { VisibilityOff } from "@mui/icons-material";
+// import { CircularProgress } from "@mui/material";
+// import { AddBox } from "@mui/icons-material";
+import {Button, Paper, Typography, IconButton } from "@mui/material";
 import { useEffect, useState } from 'react';
+import Square from './Square';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { FaArrowCircleLeft } from 'react-icons/fa';
+import { HowToReg } from '@mui/icons-material';
+// import 'react-toastify/dist/ReactToastify.css';
 import { validate } from 'email-validator'; // check package for accuuracy
 
 const PasswordRequirements = ({ password }) => {
@@ -72,7 +74,7 @@ export default function Register() {
  // Update the component when password changes
   }, [signUpData.password]);
 
-  function sendData(e, googleauth){
+  function sendData(e, googleauth){ // Look more into Google auth
     setSubmitting(true);
     setTimeout(()=>{
       setSubmitting(false);
@@ -187,12 +189,38 @@ export default function Register() {
   const responseMessage = (response) =>{
     let token = response.credential;   //Should use the credentials from Server
     let decoded = jwtDecode(token);
-    setSignUpData({name: decoded.name, email: decoded.email, password: decoded.sub})
+    setSignUpData({name: decoded.name, email: decoded.email, password: decoded.sub}); // look more into Sub && JWT Decode
+    sendData(1, {name: decoded.name, email: decoded.email, password: decoded.sub, isGoogle: true, pic: decoded.picture});
+  };
+
+  const errorMessage = (error) => {
+    console.log(error);
   }
+
+  const handleCLickShowPassword = ()=> setShowPassword
+  (!showPassword);
+  const handleMouseDownPassword = (event) => event.preventdefault();
   
   return (
-    <div>
-      
+    <>
+    <div className='flex flex-col items-center h-screen w-screen relative overflow-hidden px-2'>
+      <Square></Square>
+      <Square isRight={true}></Square>
+      <Paper className='z-20 w-full max-w-[370px] p-[2rem] my-auto' elevation={3}>
+        <Link to='/'><FaArrowCircleLeft className='text-blue-600 cursor-pointer text-2xl'></FaArrowCircleLeft></Link>
+        <div className='font-Poppins text-3xl font-extrabold flex items-center flex-col'>
+          <HowToReg fontSize='large' color='primary'/>
+          <Typography variant='h5'>Sign Up</Typography>/
+        </div>
+        <br />
+
+        <hr /> <hr />
+
+
+        <form className='mt-6 relative'></form>
+      </Paper>
+
     </div>
+    </>
   )
 }
