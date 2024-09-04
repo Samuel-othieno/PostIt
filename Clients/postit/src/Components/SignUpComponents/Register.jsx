@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Link, useNavigation } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
 import { useSubmit } from 'react-router-dom';
 import { CheckCircle } from "@mui/icons-material";
 import { Cancel } from "@mui/icons-material";
@@ -11,7 +12,7 @@ import {Button, Paper, } from "@mui/material";
 import { useEffect, useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { validate } from 'webpack';
+import { validate } from 'email-validator'; // check package for accuuracy
 
 const PasswordRequirements = ({ password }) => {
   const specialCharacterRegex = /[!@#$%^&*(),.?":{}|<>]/;
@@ -143,6 +144,50 @@ export default function Register() {
     const numberRegex = /[0-9]/;
     const uppercaseRegex = /[A-Z]/;
 
+    if(!numberRegex.test(signUpData.password)){
+      return toast.error('Invaid! Password should have at least one digit', {
+        position: "top-center",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored"
+      })
+    }
+
+    if(!specialCharacterRegex.test(signUpData.password)){
+      return toast.error('Invaid! Password should have at least one digit', {
+        position: "top-center",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored"
+      })
+    }
+
+    if(!uppercaseRegex.test(signUpData.password)){
+      return toast.error('Invaid! Password should have at least one digit', {
+        position: "top-center",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored"
+      })
+    }
+  }
+
+  const responseMessage = (response) =>{
+    let token = response.credential;   //Should use the credentials from Server
+    let decoded = jwtDecode(token);
+    setSignUpData({name: decoded.name, email: decoded.email, password: decoded.sub})
   }
   
   return (
