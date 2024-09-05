@@ -1,0 +1,38 @@
+import PropTypes from 'prop-types';
+
+export default function Input({ text, type, placeholder, onSetData, name }) {
+  function setInput(e) {
+    onSetData((data) => {
+      let obj = { ...data };
+      obj[`${name}`] = e.target.value;
+      return obj;
+    });
+  }
+
+  return (
+    <div className="mt-3 ">
+      <div className="font-poppiins font-medium mb-2 text-[#BFBFBF] ">
+        {text}
+      </div>
+      <input
+        spellCheck="false"
+        onChange={setInput}
+        type={type}
+        className="outline-0 border-[1px] rounded-md w-[100%] px-2 py-2  font-poppins border-[#BFBFBF]"
+        placeholder={placeholder}
+      ></input>
+    </div>
+  );
+}
+
+Input.propTypes = {
+    text: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    placeholder: PropTypes.string,
+    onSetData: PropTypes.func.isRequired,
+    name: PropTypes.string.isRequired,
+  };
+  
+  Input.defaultProps = {
+    placeholder: '',
+  };
