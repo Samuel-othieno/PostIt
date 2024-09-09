@@ -1,15 +1,24 @@
-import { Link, useNavigation } from "react-router-dom";
+import { Link} from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useSubmit } from "react-router-dom";
 import { CheckCircle, Visibility, VisibilityOff } from "@mui/icons-material";
 import { Cancel } from "@mui/icons-material";
-import {Paper, Typography, IconButton, Button, Box, CircularProgress } from "@mui/material";
+import {
+  Paper,
+  Typography,
+  IconButton,
+  Button,
+  Box,
+  CircularProgress,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import Square from "./Square";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
 import { FaArrowCircleLeft } from "react-icons/fa";
+import PropTypes from "prop-types";
 import { HowToReg } from "@mui/icons-material";
-import { validate } from "email-validator"; // check package for accuuracy
+import { validate } from 'react-email-validator';
 import Input from "./Input";
 
 const PasswordRequirements = ({ password }) => {
@@ -81,8 +90,8 @@ const PasswordRequirements = ({ password }) => {
   );
 };
 
-export default function Register() {
-  const navigation = useNavigation();
+export default function SignUp() {
+  // const navigation = useNavigation();
   const submit = useSubmit();
   const [signUpData, setSignUpData] = useState({
     name: "",
@@ -211,7 +220,7 @@ export default function Register() {
   }
 
   const responseMessage = (response) => {
-    let token = response.credential; //Should use the credentials from Server
+    let token = response.credential; // Set up token response from backend
     let decoded = jwtDecode(token);
     setSignUpData({
       name: decoded.name,
@@ -252,57 +261,85 @@ export default function Register() {
           </div>
           <br />
           <hr /> <hr />
-          <form className="mt-6 relative"></form>
-          <Input
-            onSetData={setSignUpData}
-            name="name"
-            text="Name"
-            placeholder="Enter your name"
-            type="text"
-          ></Input>
-          <Input
-            onSetData={setSignUpData}
-            name="email"
-            text="Email ID"
-            placeholder="Enter your Email Address"
-            type="text"
-          ></Input>
-          <div className="relativ">
-            <div className="relative">
-              <Input
-                onSetData={setSignUpData}
-                name="password"
-                text="Password"
-                type={showPassword ? "text" : "password"}
-                placeholder="password"
-              />
+          <form className="mt-6 relative">
+            <Input
+              onSetData={setSignUpData}
+              name="name"
+              text="Name"
+              placeholder="Enter your name"
+              type="text"
+            ></Input>
+            <Input
+              onSetData={setSignUpData}
+              name="email"
+              text="Email ID"
+              placeholder="Enter your Email Address"
+              type="text"
+            ></Input>
+            <div className="relativ">
+              <div className="relative">
+                <Input
+                  onSetData={setSignUpData}
+                  name="password"
+                  text="Password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="password"
+                />
 
-              <IconButton  aria-label='toggle password visibility'
-                onClick={handleClickShowPassword}
-                onMouseDown={handleMouseDownPassword}
-                edge='end'
-                style={{ position: 'absolute', right: '10px', top: '71%', transform: 'translateY(-50%)' }}>
-                {showPassword? <VisibilityOff/> : <Visibility/>}
-              </IconButton>
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "71%",
+                    transform: "translateY(-50%)",
+                  }}
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </div>
+              {showPasswordRequirements && (
+                <PasswordRequirements password={signUpData.password} />
+              )}
             </div>
-            {showPasswordRequirements && <PasswordRequirements password={signUpData.password} />}
-          </div>
 
-          <div className="flex flex-row justify-center mt-8">
-            <Button sx={{padding: ".5rem 4rem"}} onClick={sendData} variant="contained">
-              {!submitting && <div>SIGN UP</div>}
-              {submitting && <Box sx={{display: 'flex'}}><CircularProgress size={25} style={{color:'#FFFFFF'}}/></Box>}
-            </Button>
-          </div>
+            <div className="flex flex-row justify-center mt-8">
+              <Button
+                sx={{ padding: ".5rem 4rem" }}
+                onClick={sendData}
+                variant="contained"
+              >
+                {!submitting && <div>SIGN UP</div>}
+                {submitting && (
+                  <Box sx={{ display: "flex" }}>
+                    <CircularProgress size={25} style={{ color: "#FFFFFF" }} />
+                  </Box>
+                )}
+              </Button>
+            </div>
 
-          <Typography className="text-center py-3">Already have an account? <Link className='text-blue-600' to='/login'>login</Link></Typography>
+            <Typography className="text-center py-3">
+              Already have an account?{" "}
+              <Link className="text-blue-600" to="/login">
+                login
+              </Link>
+            </Typography>
 
-          <div className="h-[1px] w-full mt-4 bg-gray-400"></div>
-          <div className="flex flex-col items-center mt-6">
-            <GoogleLogin onSuccess/>
-          </div>
+            <div className="h-[1px] w-full mt-4 bg-gray-400"></div>
+            <div className="flex flex-col items-center mt-6">
+              <GoogleLogin onSuccess={responseMessage} onError={errorMessage} />
+            </div>
+          </form>
         </Paper>
       </div>
     </>
   );
 }
+
+//PropTypes Configuartion.
+PasswordRequirements.propTypes = {
+  password: PropTypes.node,
+};
