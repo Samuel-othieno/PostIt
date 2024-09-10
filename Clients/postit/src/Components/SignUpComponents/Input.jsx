@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 export default function Input({ text, type, placeholder, onSetData, name }) {
   function setInput(e) {
@@ -26,13 +26,13 @@ export default function Input({ text, type, placeholder, onSetData, name }) {
 }
 
 Input.propTypes = {
-    text: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    placeholder: PropTypes.string,
-    onSetData: PropTypes.func.isRequired,
-    name: PropTypes.string.isRequired,
-  };
-  
-  Input.defaultProps = {
-    placeholder: '',
-  };
+  text: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
+  onSetData: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired,
+};
+
+Input.defaultProps = {
+  placeholder: "",
+};
