@@ -1,5 +1,5 @@
 import { SearchOutlined } from "@mui/icons-material";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import {
   FormControl,
   IconButton,
@@ -37,6 +37,6 @@ export default function SearchBar({ onChange, SearchHandler }) {
   );
 }
 SearchBar.propTypes = {
-    onChange: PropTypes.func.isRequired,
-    SearchHandler: PropTypes.func.isRequired,
-}
+  onChange: PropTypes.func.isRequired,
+  SearchHandler: PropTypes.func.isRequired,
+};
