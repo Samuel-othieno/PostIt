@@ -33,12 +33,6 @@ export default function Item({ text, to, val }) {
   );
 }
 
-iconComponent.propTypes = {
-  ForumOutlined: PropTypes.string,
-  to: PropTypes.node,
-  val: PropTypes.func,
-};
-
 Item.propTypes = {
     text: PropTypes.string,
     to: PropTypes.node,
