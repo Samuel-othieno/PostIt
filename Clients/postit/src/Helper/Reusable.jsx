@@ -15,7 +15,7 @@ export const isSender = (id) => {
   return loggedUser._id === id;
 };
 
-export const isSameUser = (messages, index) => {
+export const isSameUser=(messages, index) => {
   if (
     index !== 0 &&
     messages[index].sender._id === messages[index - 1].sender._id
