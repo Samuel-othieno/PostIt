@@ -68,7 +68,7 @@ export default function ChatMessages() {
     return () => {
       socket.off("message recieved", messageFn);
     };
-  }, [isSet, dispatch, AllChats]); // Attention
+  }, [isSet, dispatch, AllChats]); // Pay Attention to Sockets. Need to Integrated correctly by NPM
 
   useEffect(() => {
     if (isSet === null) return;
